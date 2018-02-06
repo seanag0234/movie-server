@@ -14,25 +14,36 @@
     ]
   },
   "User": {
-    "dataSource": "db"
+    "dataSource": "mongo1"
   },
   "AccessToken": {
-    "dataSource": "db",
-    "public": false
+    "dataSource": "mongo1",
+    "public": false,
+    "relations": {
+      "client": {
+        "type": "belongsTo",
+        "model": "client",
+        "foreignKey": "clientId"
+      }
+    }
   },
   "ACL": {
-    "dataSource": "db",
+    "dataSource": "mongo1",
     "public": false
   },
   "RoleMapping": {
-    "dataSource": "db",
+    "dataSource": "mongo1",
     "public": false,
     "options": {
       "strictObjectIDCoercion": true
     }
   },
   "Role": {
-    "dataSource": "db",
+    "dataSource": "mongo1",
     "public": false
+  },
+  "Client": {
+    "dataSource": "mongo1",
+    "public": true
   }
 }
