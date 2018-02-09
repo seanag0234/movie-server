@@ -25,7 +25,7 @@
                     Remember me
                   </label>
                 </div>
-                <a class="button is-block is-info is-large">Login</a>
+                <a v-on:click="temp" class="button is-block is-info is-large">Login</a>
               </form>
             </div>
             <p class="has-text-grey">
@@ -44,14 +44,20 @@
 <script>
   import NavBar from './NavBar.vue';
 export default {
-  name: 'HelloWorld',
+  name: 'Login',
   components: {
     NavBar,
     'nav-bar': NavBar
   },
-  data () {
+  data() {
     return {
-      msg: 'WOW'
+      count: 0
+    }
+  },
+  methods: {
+    temp: function () {
+      console.log("CLICKED");
+      this.count += 1;
     }
   }
 }
@@ -60,18 +66,4 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-/*h1, h2 {*/
-  /*font-weight: normal;*/
-/*}*/
-/*ul {*/
-  /*list-style-type: none;*/
-  /*padding: 0;*/
-/*}*/
-/*li {*/
-  /*display: inline-block;*/
-  /*margin: 0 10px;*/
-/*}*/
-/*a {*/
-  /*color: #42b983;*/
-/*}*/
 </style>
