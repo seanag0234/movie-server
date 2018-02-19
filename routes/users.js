@@ -4,13 +4,15 @@ const router = express.Router();
 const mongoose = require('mongoose');
 // let db = mongodb.getDb();
 
-let userSchema = mongoose.Schema({
+let userSchema = mongoose.Schema(
+    {
         name: String,
         email: String,
     },
     {
         timestamps: true
-    });
+    }
+);
 
 let User = mongoose.model('User', userSchema);
 

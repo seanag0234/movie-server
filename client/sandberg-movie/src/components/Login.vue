@@ -11,12 +11,12 @@
               <form>
                 <div class="field">
                   <div class="control">
-                    <input class="input is-large" type="email" placeholder="Your Email" autofocus="">
+                    <input class="input" type="email" placeholder="Your Email" autofocus="">
                   </div>
                 </div>
                 <div class="field">
                   <div class="control">
-                    <input class="input is-large" type="password" placeholder="Your Password">
+                    <input class="input" type="password" placeholder="Your Password">
                   </div>
                 </div>
                 <div class="field">
@@ -25,13 +25,12 @@
                     Remember me
                   </label>
                 </div>
-                <a v-on:click="temp" class="button is-block is-info is-large">Login</a>
+                <a v-on:click="temp" class="button is-block is-info">Login</a>
               </form>
             </div>
             <p class="has-text-grey">
               <a href="../">Sign Up</a> &nbsp;·&nbsp;
-              <a href="../">Forgot Password</a> &nbsp;·&nbsp;
-              <a href="../">Need Help?</a>
+              <a href="../">Forgot Password</a>
             </p>
           </div>
         </div>
