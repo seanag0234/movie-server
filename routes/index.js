@@ -38,4 +38,38 @@ router.post('/login', function (req, res) {
     });
 });
 
+router.post('/register', function (req, res, next) {
+    let body = req.body;
+    let name = body.name;
+    let email = body.email;
+    let password = body.password;
+    if (!name || !email ||!password) {
+        res.status(400).send({message: 'name, email, and password required'});
+        return;
+    }
+    let newUser = new User();
+    newUser.name = name;
+    newUser.email = email;
+    bcrypt.hash(password, 10).then(function(hash) {
+        newUser.hashPassword = hash;
+        newUser.save().then(function(user) {
+            res.status(201).send({
+                name: user.name,
+                email: user.email,
+                id: user._id,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt
+            });
+        }).catch(function(err) {
+            if (err.code === 11000) {
+                res.status(400).send({message: `User with email ${email} already exists.`});
+            } else {
+                res.status(500).send(err);
+            }
+        })
+    }).catch(function (err) {
+        res.status(500).send();
+    });
+});
+
 module.exports = router;
