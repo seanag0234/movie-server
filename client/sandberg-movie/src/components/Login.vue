@@ -29,7 +29,10 @@
               </form>
             </div>
             <p class="has-text-grey">
-              <a href="../">Sign Up</a> &nbsp;·&nbsp;
+              <router-link :to="{name: 'Register'}">
+                <a>Sign Up</a> &nbsp;·&nbsp;
+              </router-link>
+
               <a href="../">Forgot Password</a>
             </p>
           </div>
@@ -42,24 +45,24 @@
 
 <script>
   import NavBar from './NavBar.vue';
-export default {
-  name: 'Login',
-  components: {
-    NavBar,
-    'nav-bar': NavBar
-  },
-  data() {
-    return {
-      count: 0
-    }
-  },
-  methods: {
-    temp: function () {
-      console.log("CLICKED");
-      this.count += 1;
+  export default {
+    name: 'Login',
+    components: {
+      NavBar,
+      'nav-bar': NavBar
+    },
+    data() {
+      return {
+        count: 0
+      }
+    },
+    methods: {
+      temp: function () {
+        console.log("CLICKED");
+        this.count += 1;
+      }
     }
   }
-}
 
 
 </script>
