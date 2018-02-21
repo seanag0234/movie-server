@@ -1,20 +1,7 @@
 const express = require('express');
 const router = express.Router();
-// const mongodb = require('../db/mongodb');
-const mongoose = require('mongoose');
-// let db = mongodb.getDb();
-
-let userSchema = mongoose.Schema(
-    {
-        name: String,
-        email: String,
-    },
-    {
-        timestamps: true
-    }
-);
-
-let User = mongoose.model('User', userSchema);
+const bcrypt = require('bcrypt');
+const User = require('../models/user').User;
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -22,7 +9,6 @@ router.get('/', function(req, res, next) {
         if (err) {
             return console.error(err);
         }
-        console.log(users);
         res.send(users);
     });
 });
@@ -31,32 +17,41 @@ router.post('/', function (req, res, next) {
     let body = req.body;
     let name = body.name;
     let email = body.email;
-    if (!name || !email) {
-        res.status(400).send('name and email required');
+    let password = body.password;
+    if (!name || !email ||!password) {
+        res.status(400).send({message: 'name, email, and password required'});
         return;
     }
     let newUser = new User();
     newUser.name = name;
     newUser.email = email;
-    console.log('new user ', newUser.name);
-    newUser.save().then(function(user) {
-        console.log(`saved user ${user}`);
-        res.send(`Saved User ${user}`);
-
-    }).catch(function(err) {
-        console.error.bind("ERROR ", err);
-        res.send(`Error Saving User ${err}`);
-    })
+    bcrypt.hash(password, 10).then(function(hash) {
+        newUser.hashPassword = hash;
+        newUser.save().then(function(user) {
+            res.status(201).send({
+                name: user.name,
+                email: user.email,
+                id: user._id,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt
+            });
+        }).catch(function(err) {
+            console.error.bind("ERROR ", err);
+            if (err.code === 11000) {
+                res.status(400).send({message: `User with email ${email} already exists.`});
+            } else {
+                res.status(500).send(err);
+            }
+        })
+    }).catch(function (err) {
+        next(err);
+    });
 });
 
 router.get('/:userId', function(req, res, next){
     const userId = req.params.userId;
-    console.log(`UserId ${userId}`);
     let query = User.findById(userId);
-    // query.select('*');
     query.exec().then(function(user) {
-        console.log(`User Found ${user}`);
-        console.log(user.name);
         res.send(user);
     }).catch(function(err) {
         res.status(404).send(`User not found ${userId}.`);
@@ -66,9 +61,7 @@ router.get('/:userId', function(req, res, next){
 
 router.delete('/:userId', function (req, res) {
     let userId = req.params.userId;
-    console.log("Userid ", userId);
     User.remove({'_id': userId}).then(function(res) {
-        console.log(res);
         res.send(`Deleted User: ${userId}`);
     }).catch(function(err) {
         res.status = 500;
