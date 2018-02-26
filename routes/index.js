@@ -4,10 +4,9 @@ const User = require('../models/user').User;
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+// router.get('/', function(req, res, next) {
+//   res.render('index', { title: 'Express' });
+// });
 
 router.post('/login', function (req, res) {
     if (!req.body.password || !req.body.email) {
@@ -25,8 +24,7 @@ router.post('/login', function (req, res) {
                     res.status(401).json({ message: 'Authentication failed.' });
                 } else {
                     let signingOptions = {
-                        algorithm: 'HS512',
-                        expiresIn: '8hr'
+                        algorithm: 'HS512'
                     };
                     return res.json({token: jwt.sign({ email: user.email, name: user.name, _id: user._id}, config.getSecret(), signingOptions)});
                 }
@@ -46,6 +44,8 @@ router.post('/register', function (req, res, next) {
     if (!name || !email ||!password) {
         res.status(400).send({message: 'name, email, and password required'});
         return;
+    } else if(password.length < 5) {
+        res.status(400).send({message: 'Password needs to be at least 5 characters long.'})
     }
     let newUser = new User();
     newUser.name = name;

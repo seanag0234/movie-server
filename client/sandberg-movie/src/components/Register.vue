@@ -1,6 +1,5 @@
 <template>
   <div>
-    <nav-bar></nav-bar>
     <section class="hero is-fullheight">
       <div class="hero-body">
         <div class="container has-text-centered">
@@ -24,12 +23,6 @@
                     <input class="input" v-if="passwordsMatch" type="password" v-model='confirmPassword' placeholder="Reenter Password" title="Reenter Password" required>
                     <input class="input no_match" v-if="!passwordsMatch" type="password" v-model='confirmPassword' placeholder="Passwords don't match" title="Passwords don't match" required>
                   </div>
-                </div>
-                <div class="field">
-                  <label class="checkbox">
-                    <input type="checkbox">
-                    Remember me
-                  </label>
                 </div>
                 <a v-on:click="register" class="button is-block is-info" :disabled="!(email && passwordsMatch)">Register</a>
               </form>
@@ -70,8 +63,13 @@
     },
     methods: {
       register: function() {
-        let res = apiConnector.registerUser(this.email, this.password)
+        if (this.password.length < 5) {
+          this.error = "Password must be at least 5 characters long.";
+          return;
+        }
+        apiConnector.registerUser(this.email, this.password)
           .then(response => {
+            console.log(response);
             if (response.status === 400) {
               this.error = response.data.message;
             }
@@ -91,6 +89,10 @@
     computed: {
       passwordsMatch: function() {
         return this.password === this.confirmPassword;
+      },
+      validForm: function () {
+        return this.email && this.passwordsMatch;
+
       }
     }
   }

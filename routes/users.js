@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
 const User = require('../models/user').User;
 
 /* GET users listing. */
@@ -21,7 +20,6 @@ router.get('/:userId', function(req, res, next){
     }).catch(function(err) {
         res.status(404).send(`User not found ${userId}.`);
     })
-
 });
 
 router.delete('/:userId', function (req, res, next) {
@@ -31,7 +29,6 @@ router.delete('/:userId', function (req, res, next) {
     }).catch(function(err) {
         res.status(500).send();
     })
-
 });
 
 module.exports = router;

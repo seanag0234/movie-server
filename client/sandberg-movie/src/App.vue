@@ -1,6 +1,7 @@
 
 <template>
   <div id="app">
+    <nav-bar></nav-bar>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet">
 
@@ -9,9 +10,12 @@
 </template>
 
 <script>
-export default {
-  name: 'App'
-}
+  import NavBar from './components/NavBar.vue'
+  export default {
+    name: 'App',
+    components: {NavBar}
+
+  }
 
 </script>
 
