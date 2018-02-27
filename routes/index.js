@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/user').User;
 const jwt = require('jsonwebtoken');
 const config = require('../config');
+const bcrypt = require('bcrypt');
 
 // router.get('/', function(req, res, next) {
 //   res.render('index', { title: 'Express' });
