@@ -9,35 +9,36 @@ const bcrypt = require('bcrypt');
 //   res.render('index', { title: 'Express' });
 // });
 
-router.post('/login', function (req, res) {
-    if (!req.body.password || !req.body.email) {
+router.post('/login', async function (req, res) {
+    let body = req.body;
+    let password = body.password;
+    let email = body.email;
+    if (!password || !email) {
         return res.status(400).send({message: 'email and password fields required.'});
     }
-    User.findOne({
-        email: req.body.email
-    }, function(err, user) {
-        if (err) throw err;
+    let failureMessage = {message: 'Authentication failed.'};
+    try {
+        let search = {email: email};
+        let user = await User.findOne(search);
         if (!user) {
-            res.status(401).json({ message: 'Authentication failed.' });
-        } else if (user) {
-            user.comparePassword(req.body.password).then(function(isCorrect){
-                if (!isCorrect) {
-                    res.status(401).json({ message: 'Authentication failed.' });
-                } else {
-                    let signingOptions = {
-                        algorithm: 'HS512'
-                    };
-                    return res.json({token: jwt.sign({ email: user.email, name: user.name, _id: user._id}, config.getSecret(), signingOptions)});
-                }
-
-            }).catch(function (err) {
-                return res.status(500).json({ message: 'Failed in checking password.'});
-            });
+            return res.status(401).send(failureMessage)
         }
-    });
+        let passwordsMatch = await user.comparePassword(password);
+        if (!passwordsMatch) {
+            return res.status(401).send(failureMessage)
+        }
+        let signingOptions = {
+            algorithm: 'HS512'
+        };
+        return res.json({token: jwt.sign({ email: user.email, name: user.name, _id: user._id}, config.getSecret(), signingOptions)});
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send();
+    }
 });
 
-router.post('/register', function (req, res, next) {
+router.post('/register', async function (req, res, next) {
     let body = req.body;
     let name = body.name;
     let email = body.email;
@@ -48,29 +49,27 @@ router.post('/register', function (req, res, next) {
     } else if(password.length < 5) {
         res.status(400).send({message: 'Password needs to be at least 5 characters long.'})
     }
-    let newUser = new User();
-    newUser.name = name;
-    newUser.email = email;
-    bcrypt.hash(password, 10).then(function(hash) {
-        newUser.hashPassword = hash;
-        newUser.save().then(function(user) {
-            res.status(201).send({
-                name: user.name,
-                email: user.email,
-                id: user._id,
-                createdAt: user.createdAt,
-                updatedAt: user.updatedAt
-            });
-        }).catch(function(err) {
-            if (err.code === 11000) {
-                res.status(400).send({message: `User with email ${email} already exists.`});
-            } else {
-                res.status(500).send(err);
-            }
-        })
-    }).catch(function (err) {
-        res.status(500).send();
-    });
+    try {
+        let newUser = new User();
+        newUser.name = name;
+        newUser.email = email;
+        newUser.hashPassword = await bcrypt.hash(password, 10)
+        let user = await newUser.save();
+
+        res.status(201).send({
+            name: user.name,
+            email: user.email,
+            id: user._id,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+        });
+    } catch (e) {
+        if (e.code === 11000) {
+            res.status(400).send({message: `User with email ${email} already exists.`});
+        } else {
+            res.status(500).send();
+        }
+    }
 });
 
 module.exports = router;
