@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user').User;
+const userRepo = require('../db/userRepo');
 
 /* GET users listing. */
 router.get('/', async function(req, res, next) {
@@ -19,8 +20,8 @@ router.get('/:userId', async function(req, res, next){
     }
     const userId = req.params.userId;
     try {
-        let query = User.findById(userId);
-        let user = await query.exec();
+        let user = await userRepo.findById(userId);
+        console.log("USER IS ", user);
         return res.send(user);
     } catch (e) {
         return res.status(404).send(`User with id ${userId} not found`);
