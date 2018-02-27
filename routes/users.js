@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/user').User;
 const userRepo = require('../db/userRepo');
 
 /* GET users listing. */
 router.get('/', async function(req, res, next) {
     try {
-        let users = await User.find();
+        let users = await userRepo.getAllUsersWithoutPassword();
         res.send(users);
 
     } catch (e) {
@@ -20,7 +19,7 @@ router.get('/:userId', async function(req, res, next){
     }
     const userId = req.params.userId;
     try {
-        let user = await userRepo.findById(userId);
+        let user = await userRepo.findByIdWithoutPassword(userId);
         console.log("USER IS ", user);
         return res.send(user);
     } catch (e) {
@@ -34,7 +33,7 @@ router.delete('/:userId', async function (req, res, next) {
     }
     const userId = req.params.userId;
     try {
-       await User.remove({'_id': userId});
+       await userRepo.deleteUserById(userId);
         res.send(`Deleted User: ${userId}`);
     } catch (e) {
         res.status(500).send();

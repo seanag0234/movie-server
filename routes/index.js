@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/user').User;
 const jwt = require('jsonwebtoken');
 const config = require('../config');
-const bcrypt = require('bcrypt');
+const userRepo = require('../db/userRepo');
 
 // router.get('/', function(req, res, next) {
 //   res.render('index', { title: 'Express' });
@@ -18,8 +17,7 @@ router.post('/login', async function (req, res) {
     }
     let failureMessage = {message: 'Authentication failed.'};
     try {
-        let search = {email: email};
-        let user = await User.findOne(search);
+        let user = await userRepo.findByEmail(email);
         if (!user) {
             return res.status(401).send(failureMessage)
         }
@@ -50,20 +48,11 @@ router.post('/register', async function (req, res, next) {
         res.status(400).send({message: 'Password needs to be at least 5 characters long.'})
     }
     try {
-        let newUser = new User();
-        newUser.name = name;
-        newUser.email = email;
-        newUser.hashPassword = await bcrypt.hash(password, 10)
-        let user = await newUser.save();
-
-        res.status(201).send({
-            name: user.name,
-            email: user.email,
-            id: user._id,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt
-        });
+        let user = await userRepo.createUser(name, email, password);
+        user.hashPassword = undefined;
+        res.status(201).send(user);
     } catch (e) {
+        console.log(e);
         if (e.code === 11000) {
             res.status(400).send({message: `User with email ${email} already exists.`});
         } else {
