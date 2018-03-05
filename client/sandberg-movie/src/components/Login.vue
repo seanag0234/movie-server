@@ -44,6 +44,7 @@
 
 <script>
   import NavBar from './NavBar.vue';
+  import {mapGetters} from 'vuex'
   export default {
     name: 'Login',
     components: {

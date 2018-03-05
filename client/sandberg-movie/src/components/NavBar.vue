@@ -1,43 +1,48 @@
 <template>
-  <div>
-    <nav class="navbar is-info">
-      <div class="container">
-        <div class="navbar-brand">
-          <!--<a class="navbar-item has-text-weight-bold" href="#">MYLOGO</a>-->
-          <a class="navbar-item">
-            <!--<img src="../assets/logo.png"  alt="Bulma">-->
-          </a>
-          <div class="navbar-burger burger" data-target="navMenu">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
+  <nav class="navbar welcome is-info">
+    <div class="container">
+      <div class="navbar-brand">
+        <router-link  class="navbar-item brand-text"  to="/" exact>
+          The Sandberg Vault
+        </router-link>
+        <div class="burger navbar-burger" data-target="navMenu">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
-        <div class="navbar-menu" id="navMenu">
-          <div class="navbar-start">
-            <div class="navbar-item has-dropdown is-hoverable">
-              <a href="#" class="navbar-link is-active"><i class="material-icons md-36" style="padding-right: 10px">movie_filter</i>Browse</a>
-              <div class="navbar-dropdown">
-                <a href="#" class="navbar-item">Amazing Product</a>
-                <a href="#" class="navbar-item">Superior Quality</a>
-                <a href="#" class="navbar-item">Another Amazing Product</a>
-              </div>
+      </div>
+      <div id="navMenu" class="navbar-menu">
+        <div class="navbar-start" v-if="isAuthenticated">
+          <router-link class="navbar-item" :to="{name: 'Home'}" exact>
+            Home
+          </router-link>
+          <div class="navbar-item has-dropdown is-hoverable" >
+            <a  class="navbar-link" >
+              Movies
+            </a>
+            <div class="navbar-dropdown is-boxed">
+              <router-link  class="navbar-item"  :to="{name: 'MyMovies'}">
+                My movies
+
+              </router-link>
+              <router-link  class="navbar-item"  :to="{name: 'MovieWishlist'}">
+                My Wishlist
+              </router-link>
+              <router-link  class="navbar-item"  :to="{name: 'LoanedMovies'}">
+                Loaned
+              </router-link>
+              <router-link  class="navbar-item"  :to="{name: 'BorrowedMovies'}">
+                Borrowed
+              </router-link>
             </div>
-          </div>
-          <div class="navbar-end">
-            <a href="index.html" class="navbar-item">Home</a>
-            <a href="/secondary.html" class="navbar-item">Services</a>
-            <a href="#" class="navbar-item">Docs</a>
-            <a href="#" class="navbar-item">Contact</a>
           </div>
         </div>
       </div>
-    </nav>
-  </div>
+    </div>
+  </nav>
 </template>
 
 <script>
-
   document.addEventListener('DOMContentLoaded', function () {
 
     // Get all "navbar-burger" elements
@@ -51,8 +56,8 @@
         $el.addEventListener('click', function () {
 
           // Get the target from the "data-target" attribute
-          var target = $el.dataset.target;
-          var $target = document.getElementById(target);
+          let target = $el.dataset.target;
+          let $target = document.getElementById(target);
 
           // Toggle the class on both the "navbar-burger" and the "navbar-menu"
           $el.classList.toggle('is-active');
@@ -63,12 +68,26 @@
     }
 
   });
-    export default {
-        name: "nav-bar"
-    }
+
+  import {mapGetters} from 'vuex';
+  export default {
+    name: "nav-bar",
+    computed: {
+      ...mapGetters(['isAuthenticated'])
+    },
+  }
 </script>
 
-<style lang="sass" scoped>
-  /*@import "../assets/sass/main.sass"dd*/
-
+<style scoped>
+  nav.navbar {
+    border-top: 4px solid #276cda;
+    margin-bottom: 1rem;
+  }
+  .navbar-item.brand-text {
+    font-weight: 800;
+  }
+  .navbar-item, .navbar-link {
+    font-size: 14px;
+    font-weight: 700;
+  }
 </style>
