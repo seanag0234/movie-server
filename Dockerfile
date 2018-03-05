@@ -9,4 +9,4 @@ RUN npm install
 RUN npm install -g nodemon
 WORKDIR /usr/src/app
 EXPOSE 3000 8080
-CMD ["nodemon", "--ignore", "client/"]
+CMD ["nodemon"]
