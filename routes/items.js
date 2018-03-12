@@ -78,12 +78,12 @@ let deleteById = async function (req, res) {
     try {
         let items = await itemRepo.findByUserId(req.user._id);
         let found = false;
-        items.forEach((i) => {
+        for (let i of items) {
             if (i._id.toString() === itemId) {
-                found = true
+                found = true;
+                break;
             }
-        });
-
+        }
         if (!found) {
             return res.status(404).send();
         }
