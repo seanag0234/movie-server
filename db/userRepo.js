@@ -55,10 +55,10 @@ async function deleteUserById(id) {
 
 
 module.exports = {
-    findByIdWithoutPassword: findByIdWithoutPassword,
-    getAllUsersWithoutPassword: getAllUsersWithoutPassword,
-    deleteUserById: deleteUserById,
-    findByEmail: findByEmail,
-    createUser: createUser
+    findByIdWithoutPassword,
+    getAllUsersWithoutPassword,
+    deleteUserById,
+    findByEmail,
+    createUser
 
 };

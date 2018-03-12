@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userRepo = require('../db/userRepo');
+const items = require('../routes/items');
 
 /* GET users listing. */
 router.get('/', async function(req, res, next) {
@@ -38,6 +39,13 @@ router.delete('/:userId', async function (req, res, next) {
     } catch (e) {
         res.status(500).send();
     }
+});
+router.get('/:userId/items', async function(req, res, next){
+    return items.getUsersItems(req, res);
+});
+
+router.post('/:userId/items', function (req, res) {
+    return items.addItemToUser(req, res);
 });
 
 module.exports = router;

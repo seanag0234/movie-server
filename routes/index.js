@@ -47,8 +47,7 @@ router.post('/register', async function (req, res, next) {
     let email = body.email;
     let password = body.password;
     if (!name || !email ||!password) {
-        res.status(400).send({message: 'name, email, and password required'});
-        return;
+        return res.status(400).send({message: 'name, email, and password required'});
     } else if(password.length < 5) {
         res.status(400).send({message: 'Password needs to be at least 5 characters long.'})
     }

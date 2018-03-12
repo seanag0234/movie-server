@@ -1,15 +1,35 @@
 const Item = require('../models/item').Item;
 
+const acceptedTypes = [
+    'movie',
+    'book'
+];
+
+const validMediums = {
+    'movie': [
+        'dvd',
+        'bluRay'
+    ]
+};
+
+function isValidType(type) {
+    return acceptedTypes.includes(type);
+}
+
+function isValidMedium(type, medium) {
+    return validMediums[type] && validMediums[type].includes(medium);
+}
+
 function findByUserId(id) {
     try {
-        let search = {user_id: id};
-        return Item.find(search)
+        let search = {userId: id};
+        return Item.find(search);
     } catch (e) {
         throw e;
     }
 }
 
-function create(title, type, category, medium, userId) {
+function create(title, type, medium, userId, category='General') {
     try {
         let newItem = new Item();
         newItem.title = title;
@@ -25,6 +45,8 @@ function create(title, type, category, medium, userId) {
 
 module.exports = {
     findByUserId,
-    create
+    create,
+    isValidType,
+    isValidMedium
 };
 
