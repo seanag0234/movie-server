@@ -8,5 +8,5 @@ WORKDIR /usr/src/app
 RUN npm install
 RUN npm install -g nodemon
 WORKDIR /usr/src/app
-EXPOSE 3000 8080
+EXPOSE 3000
 CMD ["nodemon"]

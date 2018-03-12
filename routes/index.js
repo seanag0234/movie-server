@@ -3,10 +3,17 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const userRepo = require('../db/userRepo');
-
+const auth = require('../middleware/auth');
 // router.get('/', function(req, res, next) {
 //   res.render('index', { title: 'Express' });
 // });
+
+function signToken(user) {
+    let signingOptions = {
+        algorithm: 'HS512'
+    };
+    return jwt.sign({ email: user.email, name: user.name, _id: user._id}, config.getSecret(), signingOptions);
+}
 
 router.post('/login', async function (req, res) {
     let body = req.body;
@@ -17,7 +24,8 @@ router.post('/login', async function (req, res) {
     }
     let failureMessage = {message: 'Authentication failed.'};
     try {
-        let user = await userRepo.findByEmail(email);
+        let query = userRepo.findByEmail(email);
+        let user = await query;
         if (!user) {
             return res.status(401).send(failureMessage)
         }
@@ -25,10 +33,7 @@ router.post('/login', async function (req, res) {
         if (!passwordsMatch) {
             return res.status(401).send(failureMessage)
         }
-        let signingOptions = {
-            algorithm: 'HS512'
-        };
-        return res.json({token: jwt.sign({ email: user.email, name: user.name, _id: user._id}, config.getSecret(), signingOptions)});
+        return res.json({token: signToken(user)});
 
     } catch (e) {
         console.log(e);
@@ -50,7 +55,10 @@ router.post('/register', async function (req, res, next) {
     try {
         let user = await userRepo.createUser(name, email, password);
         user.hashPassword = undefined;
-        res.status(201).send(user);
+        res.status(201).send({
+            'user': user,
+            'token': signToken(user)
+        });
     } catch (e) {
         console.log(e);
         if (e.code === 11000) {
@@ -58,6 +66,16 @@ router.post('/register', async function (req, res, next) {
         } else {
             res.status(500).send();
         }
+    }
+});
+
+router.post('/verify-token', async function (req, res) {
+    try {
+        let token  = req.body.token;
+        await auth.verifyToken(token);
+        res.status(200).send();
+    } catch (e) {
+        res.status(401).send();
     }
 });
 
