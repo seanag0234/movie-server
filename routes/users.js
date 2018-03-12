@@ -21,7 +21,6 @@ router.get('/:userId', async function(req, res, next){
     const userId = req.params.userId;
     try {
         let user = await userRepo.findByIdWithoutPassword(userId);
-        console.log("USER IS ", user);
         return res.send(user);
     } catch (e) {
         return res.status(404).send(`User with id ${userId} not found`);
@@ -46,6 +45,10 @@ router.get('/:userId/items', async function(req, res, next){
 
 router.post('/:userId/items', function (req, res) {
     return items.addItemToUser(req, res);
+});
+
+router.put('/:userId/items/:itemId', function (req, res) {
+    return items.update(req, res);
 });
 
 module.exports = router;

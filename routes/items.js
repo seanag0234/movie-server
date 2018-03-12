@@ -40,10 +40,36 @@ let addItemToUser = async function(req, res) {
     } catch (e) {
         return res.status(404).send(`User with id ${userId} not found`);
     }
+};
+
+let update = async function(req, res) {
+    let userId = req.params.userId;
+    let itemId = req.params.itemId;
+    if(!userId || !itemId) {
+        return res.status(400).send({message: 'userId and itemId params required'})
+    }
+    try {
+        let newItem = req.body.item;
+        console.log(newItem.medium);
+        if (!itemRepo.isValidType(newItem.type) ) {
+            return res.status(400).send({message: 'Not a valid type'});
+        }
+
+        if (!itemRepo.isValidMedium(newItem.type, newItem.medium)) {
+            return res.status(400).send({message: 'Not a valid medium'});
+
+        }
+        let item = await itemRepo.update(itemId, req.body.item);
+        return res.status(200).send(item);
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send();
+    }
 
 };
 
 module.exports = {
     getUsersItems,
-    addItemToUser
+    addItemToUser,
+    update
 };

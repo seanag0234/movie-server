@@ -17,6 +17,7 @@ function isValidType(type) {
 }
 
 function isValidMedium(type, medium) {
+    console.log(medium);
     return validMediums[type] && validMediums[type].includes(medium);
 }
 
@@ -24,6 +25,34 @@ function findByUserId(id) {
     try {
         let search = {userId: id};
         return Item.find(search);
+    } catch (e) {
+        throw e;
+    }
+}
+
+function findById(id) {
+    try {
+        return Item.findById(id);
+    } catch (e) {
+        throw e;
+    }
+}
+
+
+function deleteById(id) {
+    try {
+        return Item.remove({'_id': id});
+    } catch (e) {
+        throw e;
+    }
+}
+
+async function update(id, item) {
+    try {
+        let oldItem = await Item.findById(id);
+        await oldItem.set(item);
+        return oldItem.save();
+
     } catch (e) {
         throw e;
     }
@@ -47,6 +76,9 @@ module.exports = {
     findByUserId,
     create,
     isValidType,
-    isValidMedium
+    isValidMedium,
+    deleteById,
+    update,
+
 };
 
