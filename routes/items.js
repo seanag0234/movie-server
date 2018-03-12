@@ -1,5 +1,4 @@
 const itemRepo = require('../db/itemRepo');
-const userRepo = require('../db/userRepo');
 
 let getUsersItems = async function(req, res) {
     if (!req.params.userId) {
