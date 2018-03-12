@@ -51,4 +51,8 @@ router.put('/:userId/items/:itemId', function (req, res) {
     return items.update(req, res);
 });
 
+router.delete('/:userId/items/:itemId', function (req, res) {
+  return items.deleteById(req, res);
+});
+
 module.exports = router;

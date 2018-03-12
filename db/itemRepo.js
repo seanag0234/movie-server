@@ -79,6 +79,7 @@ module.exports = {
     isValidMedium,
     deleteById,
     update,
+    findById
 
 };
 

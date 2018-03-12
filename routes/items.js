@@ -1,4 +1,5 @@
 const itemRepo = require('../db/itemRepo');
+const userRepo = require('../db/userRepo');
 
 let getUsersItems = async function(req, res) {
     if (!req.params.userId) {
@@ -68,8 +69,34 @@ let update = async function(req, res) {
 
 };
 
+let deleteById = async function (req, res) {
+    let userId = req.params.userId;
+    let itemId = req.params.itemId;
+    if(!userId || !itemId) {
+        return res.status(400).send({message: 'userId and itemId params required'})
+    }
+    try {
+        let items = await itemRepo.findByUserId(req.user._id);
+        let found = false;
+        items.forEach((i) => {
+            if (i._id.toString() === itemId) {
+                found = true
+            }
+        });
+
+        if (!found) {
+            return res.status(404).send();
+        }
+        await itemRepo.deleteById(itemId);
+        return res.status(204).send();
+    } catch (e) {
+        res.status(500).send();
+    }
+};
+
 module.exports = {
     getUsersItems,
     addItemToUser,
-    update
+    update,
+    deleteById
 };
