@@ -19,6 +19,7 @@ async function createUser(name, email, password) {
        newUser.name = name;
        newUser.email = email;
        newUser.hashPassword = await bcrypt.hash(password, 10);
+       newUser.type = 'user';
        return await newUser.save();
    } catch (e) {
        throw e;

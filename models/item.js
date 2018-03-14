@@ -24,6 +24,10 @@ let itemSchema = mongoose.Schema(
         userId: {
             type: String,
             required: true
+        },
+        status: {
+            type: String,
+            required: true
         }
     },
     {

@@ -3,7 +3,9 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const userRepo = require('../db/userRepo');
+const itemRepo = require('../db/itemRepo');
 const auth = require('../middleware/auth');
+
 // router.get('/', function(req, res, next) {
 //   res.render('index', { title: 'Express' });
 // });
@@ -12,7 +14,7 @@ function signToken(user) {
     let signingOptions = {
         algorithm: 'HS512'
     };
-    return jwt.sign({ email: user.email, name: user.name, _id: user._id}, config.getSecret(), signingOptions);
+    return jwt.sign({ email: user.email, name: user.name, _id: user._id, type: user.type}, config.getSecret(), signingOptions);
 }
 
 router.post('/login', async function (req, res) {
@@ -22,7 +24,7 @@ router.post('/login', async function (req, res) {
     if (!password || !email) {
         return res.status(400).send({message: 'email and password fields required.'});
     }
-    let failureMessage = {message: 'Authentication failed.'};
+    let failureMessage = {message: 'Username or password did not match'};
     try {
         let query = userRepo.findByEmail(email);
         let user = await query;
@@ -33,7 +35,9 @@ router.post('/login', async function (req, res) {
         if (!passwordsMatch) {
             return res.status(401).send(failureMessage)
         }
-        return res.json({token: signToken(user)});
+        let token = signToken(user);
+        user.hashPassword = undefined;
+        return res.json({token: token, user: user});
 
     } catch (e) {
         console.log(e);
@@ -71,8 +75,13 @@ router.post('/register', async function (req, res, next) {
 router.post('/verify-token', async function (req, res) {
     try {
         let token  = req.body.token;
-        await auth.verifyToken(token);
-        res.status(200).send();
+        let user = await auth.verifyToken(token);
+        let items = await itemRepo.findByUserId(user._id);
+        let movies = items.filter((i) => {
+            return i.type === 'movie';
+        });
+        user.movies = movies;
+        res.status(200).send({user: user});
     } catch (e) {
         res.status(401).send();
     }

@@ -22,10 +22,11 @@ let addItemToUser = async function(req, res) {
     let body = req.body;
     let title = body.title;
     let type = body.type;
-    let category = body.category;
+    let category = body.category ? body.category : 'General';
     let medium = body.medium;
-    if (!title || !type ||!medium) {
-        return res.status(400).send({message: 'title, type, and medium are required'});
+    let status = body.status;
+    if (!title || !type ||!medium || !status) {
+        return res.status(400).send({message: 'title, type, status, and medium are required'});
     }
     if (!itemRepo.isValidType(type)) {
         return res.status(400).send({message: `${type} is not a valid type`});
@@ -35,8 +36,8 @@ let addItemToUser = async function(req, res) {
     }
     const userId = req.params.userId;
     try {
-        let item = await itemRepo.create(title, type, medium, userId, category);
-        return res.status(201).send(item);
+        let item = await itemRepo.create(title, type, medium, userId, status, category);
+        return res.status(201).send({item: item});
     } catch (e) {
         return res.status(404).send(`User with id ${userId} not found`);
     }
@@ -49,7 +50,7 @@ let update = async function(req, res) {
         return res.status(400).send({message: 'userId and itemId params required'})
     }
     try {
-        let owned = await userOwnsItem(req.user_id, itemId);
+        let owned = await userOwnsItem(req.user._id, itemId);
         if (!owned) {
             return res.status(401).send();
         }
@@ -64,7 +65,7 @@ let update = async function(req, res) {
 
         }
         let item = await itemRepo.update(itemId, req.body.item);
-        return res.status(200).send(item);
+        return res.status(200).send({item: item});
     } catch (e) {
         console.log(e);
         return res.status(500).send();

@@ -58,7 +58,7 @@ async function update(id, item) {
     }
 }
 
-function create(title, type, medium, userId, category='General') {
+function create(title, type, medium, userId, status, category='General') {
     try {
         let newItem = new Item();
         newItem.title = title;
@@ -66,6 +66,7 @@ function create(title, type, medium, userId, category='General') {
         newItem.category = category;
         newItem.medium = medium;
         newItem.userId = userId;
+        newItem.status = status;
         return newItem.save();
     } catch (e) {
         throw e;

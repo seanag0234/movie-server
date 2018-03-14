@@ -17,6 +17,10 @@ let userSchema = mongoose.Schema(
         hashPassword: {
             type: String,
             required: true
+        },
+        type: {
+            type: String,
+            required: true
         }
     },
     {
