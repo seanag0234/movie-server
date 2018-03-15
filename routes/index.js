@@ -80,7 +80,11 @@ router.post('/verify-token', async function (req, res) {
         let movies = items.filter((i) => {
             return i.type === 'movie';
         });
+        let books = items.filter((i) => {
+            return i.type === 'book';
+        });
         user.movies = movies;
+        user.books = books;
         res.status(200).send({user: user});
     } catch (e) {
         res.status(401).send();

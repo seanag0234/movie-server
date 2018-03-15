@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const userRepo = require('../db/userRepo');
+const itemsRepo = require('../db/itemRepo');
 const items = require('../routes/items');
 
 /* GET users listing. */
 router.get('/', async function(req, res, next) {
     try {
         let users = await userRepo.getAllUsersWithoutPassword();
-        res.send(users);
-
+        res.send({users: users});
     } catch (e) {
         res.status(500).send();
     }
@@ -20,8 +20,11 @@ router.get('/:userId', async function(req, res, next){
     }
     const userId = req.params.userId;
     try {
-        let user = await userRepo.findByIdWithoutPassword(userId);
-        return res.send(user);
+        let userQuery =  userRepo.findByIdWithoutPassword(userId);
+        let itemsQuery =  itemsRepo.findByUserId(userId);
+        let user = await userQuery;
+        let items = await itemsQuery;
+        return res.send({user: user, items: items});
     } catch (e) {
         return res.status(404).send(`User with id ${userId} not found`);
     }
