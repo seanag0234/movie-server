@@ -1,40 +1,17 @@
-const mongoose = require('mongoose');
 
-
-let itemSchema = mongoose.Schema(
-    {
-        title: {
-            type: String,
-            trim: true,
-            required: true
-        },
-        type: {
-            type: String,
-            trim: true,
-            required: true
-        },
-        category: {
-            type: String,
-            required: false
-        },
-        medium: {
-            type: String,
-            required: true
-        },
-        userId: {
-            type: String,
-            required: true
-        },
-        status: {
-            type: String,
-            required: true
-        }
-    },
-    {
-        timestamps: true
+class Item {
+    constructor(title, type, category, medium, userId, status, updatedAt='', createdAt='') {
+        this.title = title;
+        this.type = type;
+        this.category = category;
+        this.medium = medium;
+        this.userId = userId;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
-);
+}
 
 module.exports = {
-    Item: mongoose.model('item', itemSchema)
+    Item: Item
 };

@@ -1,37 +1,21 @@
-const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-let userSchema = mongoose.Schema(
-    {
-        name: {
-            type: String,
-            trim: true,
-            required: true
-        },
-        email: {
-            type: String,
-            unique: true,
-            trim: true,
-            required: true
-        },
-        hashPassword: {
-            type: String,
-            required: true
-        },
-        type: {
-            type: String,
-            required: true
-        }
-    },
-    {
-        timestamps: true
+class User {
+    constructor(name, email, hashPassword, type, updatedAt='', createdAt='') {
+        this.name = name;
+        this.email = email;
+        this.hashPassword = hashPassword;
+        this.type = type;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
-);
 
-userSchema.methods.comparePassword = function (password) {
-    return bcrypt.compare(password, this.hashPassword);
-};
+    comparePassword (password) {
+        return bcrypt.compare(password, this.hashPassword);
+    }
+
+}
 
 module.exports = {
-    User: mongoose.model('User', userSchema)
+    User: User
 };
