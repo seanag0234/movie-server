@@ -9,6 +9,10 @@ const validMediums = {
     'movie': [
         'dvd',
         'bluRay'
+    ],
+    'book': [
+        'paperback',
+        'hardcover'
     ]
 };
 
