@@ -1,12 +1,21 @@
-const User = require('../models/user').User;
 const bcrypt = require('bcrypt');
+const env = process.env.NODE_ENV || 'development';
+const config = require('../knexfile')[env];
+const knex = require('knex')(config);
 
+const USERS_TABLE = 'users';
 
 async function findByIdWithoutPassword(id) {
     try {
-        let query = User.findById(id);
-        query.select('-hashPassword');
-        return await query.exec();
+        return knex(USERS_TABLE)
+            .select(
+                'id',
+                'email',
+                'name',
+                'type',
+                'created_at',
+                'updated_at'
+            ).where('id', id);
     } catch (e) {
         console.log(e);
         throw e;
@@ -15,12 +24,8 @@ async function findByIdWithoutPassword(id) {
 
 async function createUser(name, email, password) {
    try {
-       let newUser = new User();
-       newUser.name = name;
-       newUser.email = email;
-       newUser.hashPassword = await bcrypt.hash(password, 10);
-       newUser.type = 'user';
-       return await newUser.save();
+       let hashPassword = await bcrypt.hash(password, 10);
+       return knex(USERS_TABLE).insert({email: email, hash_password: hashPassword, name: name, type: 'user'});
    } catch (e) {
        throw e;
    }
@@ -28,8 +33,7 @@ async function createUser(name, email, password) {
 
 async function findByEmail(email) {
     try {
-        let search = {email: email};
-        return await User.findOne(search)
+        return knex(USERS_TABLE).where('email', email);
     } catch (e) {
         throw e;
     }
@@ -37,9 +41,9 @@ async function findByEmail(email) {
 
 async function getAllUsersWithoutPassword() {
     try {
-        let query = User.find();
-        query.select('-hashPassword');
-        return await query.exec();
+        console.log("HERE");
+        console.log(knex);
+        return knex(USERS_TABLE);
     } catch (e) {
         throw e;
     }
@@ -47,7 +51,7 @@ async function getAllUsersWithoutPassword() {
 
 async function deleteUserById(id) {
    try {
-       return await User.remove({'_id': id});
+       return knex(USERS_TABLE).where('id', id).del();
    } catch (e) {
        throw e;
    }

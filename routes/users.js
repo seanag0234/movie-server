@@ -7,9 +7,12 @@ const items = require('../routes/items');
 /* GET users listing. */
 router.get('/', async function(req, res, next) {
     try {
-        let users = await userRepo.getAllUsersWithoutPassword();
-        res.send({users: users});
+        console.log("here");
+        let usersP = userRepo.getAllUsersWithoutPassword();
+        console.log(usersP);
+        res.send({users: await usersP});
     } catch (e) {
+        console.log(e);
         res.status(500).send();
     }
 });

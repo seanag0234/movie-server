@@ -1,4 +1,8 @@
-const Item = require('../models/item').Item;
+const env = process.env.NODE_ENV || 'development';
+const config = require('../knexfile')[env];
+const knex = require('knex')(config);
+
+const ITEMS_TABLE = 'items';
 
 const acceptedTypes = [
     'movie',
@@ -27,8 +31,7 @@ function isValidMedium(type, medium) {
 
 function findByUserId(id) {
     try {
-        let search = {userId: id};
-        return Item.find(search);
+        return knex(ITEMS_TABLE).where('user_id', id);
     } catch (e) {
         throw e;
     }
@@ -36,7 +39,7 @@ function findByUserId(id) {
 
 function findById(id) {
     try {
-        return Item.findById(id);
+        return knex(ITEMS_TABLE).where('id', id);
     } catch (e) {
         throw e;
     }
@@ -45,7 +48,7 @@ function findById(id) {
 
 function deleteById(id) {
     try {
-        return Item.remove({'_id': id});
+        return knex(ITEMS_TABLE).where('id', id).del();
     } catch (e) {
         throw e;
     }
@@ -53,10 +56,16 @@ function deleteById(id) {
 
 async function update(id, item) {
     try {
-        let oldItem = await Item.findById(id);
-        await oldItem.set(item);
-        return oldItem.save();
-
+        return knex(ITEMS_TABLE).where('id', id)
+            .update({
+                title: item.title,
+                type: item.type,
+                category: item.category,
+                medium: item.medium,
+                user_id: item.userId,
+                status: item.status,
+                // updated_at: Date.now()
+            });
     } catch (e) {
         throw e;
     }
@@ -64,14 +73,18 @@ async function update(id, item) {
 
 function create(title, type, medium, userId, status, category='General') {
     try {
-        let newItem = new Item();
-        newItem.title = title;
-        newItem.type = type;
-        newItem.category = category;
-        newItem.medium = medium;
-        newItem.userId = userId;
-        newItem.status = status;
-        return newItem.save();
+        let now = Date.now();
+        return knex(ITEMS_TABLE)
+            .insert({
+                title: title,
+                type: type,
+                medium: medium,
+                user_id: userId,
+                status: status,
+                category: category,
+                // created_at: now,
+                // updated_at: now
+            })
     } catch (e) {
         throw e;
     }
