@@ -21,7 +21,9 @@ class Item {
         item.category = row.category;
         item.medium = row.medium;
         item.status = row.status;
-        item.userId = row.userid;
+        item.userId = row.user_id;
+        item.type = row.type;
+        return item;
     }
 }
 

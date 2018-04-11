@@ -41,9 +41,11 @@ let addItemToUser = async function(req, res) {
     const userId = req.params.userId;
     try {
         let itemId = await itemRepo.create(title, type, medium, userId, status, category);
-        let item = await itemRepo.findById(itemId);
+        let itemRow = await itemRepo.findById(itemId);
+        let item = Item.getFromRow(itemRow);
         return res.status(201).send({item: item});
     } catch (e) {
+        console.log(e);
         return res.status(404).send(`User with id ${userId} not found`);
     }
 };
@@ -68,7 +70,9 @@ let update = async function(req, res) {
             return res.status(400).send({message: 'Not a valid medium'});
 
         }
-        let item = await itemRepo.update(itemId, req.body.item);
+        await itemRepo.update(itemId, req.body.item);
+        let itemRow = await itemRepo.findById(itemId);
+        let item = Item.getFromRow(itemRow);
         return res.status(200).send({item: item});
     } catch (e) {
         console.log(e);

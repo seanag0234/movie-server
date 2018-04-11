@@ -61,9 +61,9 @@ async function update(id, item) {
                 type: item.type,
                 category: item.category,
                 medium: item.medium,
-                userid: item.userId,
+                user_id: item.userId,
                 status: item.status,
-                // updated_at: Date.now()
+                updated_at: knex.fn.now()
             });
     } catch (e) {
         throw e;
@@ -72,17 +72,14 @@ async function update(id, item) {
 
 function create(title, type, medium, userId, status, category='General') {
     try {
-        let now = Date.now();
         return knex(ITEMS_TABLE)
             .insert({
                 title: title,
                 type: type,
                 medium: medium,
-                userid: userId,
+                user_id: userId,
                 status: status,
                 category: category,
-                // created_at: now,
-                // updated_at: now
             })
     } catch (e) {
         throw e;

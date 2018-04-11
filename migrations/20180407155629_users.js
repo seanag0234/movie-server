@@ -6,7 +6,7 @@ exports.up = function(knex, Promise) {
             table.string('hash_password').notNullable();
             table.string('name');
             table.string('type');
-            table.timestamps(false, true);
+            table.timestamps(true, true);
         }),
     ]);
 };

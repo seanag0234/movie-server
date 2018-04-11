@@ -5,6 +5,8 @@ const config = require('../config');
 const userRepo = require('../db/userRepo');
 const itemRepo = require('../db/itemRepo');
 const auth = require('../middleware/auth');
+const User = require('../models/user').User;
+const Item = require('../models/item').Item;
 
 // router.get('/', function(req, res, next) {
 //   res.render('index', { title: 'Express' });
@@ -24,10 +26,11 @@ router.post('/login', async function (req, res) {
     if (!password || !email) {
         return res.status(400).send({message: 'email and password fields required.'});
     }
-    let failureMessage = {message: 'Username or password did not match'};
+    let failureMessage = {message: 'Username or password did not match a user'};
     try {
         let query = userRepo.findByEmail(email);
-        let user = await query;
+        let userRow = await query;
+        let user = userRow ? User.getFromRow(userRow) : undefined;
         if (!user) {
             return res.status(401).send(failureMessage)
         }
@@ -76,7 +79,11 @@ router.post('/verify-token', async function (req, res) {
     try {
         let token  = req.body.token;
         let user = await auth.verifyToken(token);
-        let items = await itemRepo.findByUserId(user.id);
+        let itemsRows = await itemRepo.findByUserId(user.id);
+        let items = [];
+        itemsRows.forEach(item => {
+            items.push(Item.getFromRow(item));
+        });
         let movies = items.filter((i) => {
             return i.type === 'movie';
         });

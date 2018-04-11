@@ -33,7 +33,7 @@ async function createUser(name, email, password) {
 
 async function findByEmail(email) {
     try {
-        return knex(USERS_TABLE).where('email', email);
+        return knex(USERS_TABLE).where('email', email).first();
     } catch (e) {
         throw e;
     }
