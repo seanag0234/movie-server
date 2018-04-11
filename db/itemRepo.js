@@ -25,7 +25,6 @@ function isValidType(type) {
 }
 
 function isValidMedium(type, medium) {
-    console.log(medium);
     return validMediums[type] && validMediums[type].includes(medium);
 }
 
@@ -39,7 +38,7 @@ function findByUserId(id) {
 
 function findById(id) {
     try {
-        return knex(ITEMS_TABLE).where('id', id);
+        return knex(ITEMS_TABLE).where('id', id).first();
     } catch (e) {
         throw e;
     }
@@ -62,7 +61,7 @@ async function update(id, item) {
                 type: item.type,
                 category: item.category,
                 medium: item.medium,
-                user_id: item.userId,
+                userid: item.userId,
                 status: item.status,
                 // updated_at: Date.now()
             });
@@ -79,7 +78,7 @@ function create(title, type, medium, userId, status, category='General') {
                 title: title,
                 type: type,
                 medium: medium,
-                user_id: userId,
+                userid: userId,
                 status: status,
                 category: category,
                 // created_at: now,

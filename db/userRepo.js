@@ -15,7 +15,7 @@ async function findByIdWithoutPassword(id) {
                 'type',
                 'created_at',
                 'updated_at'
-            ).where('id', id);
+            ).where({id: id}).first();
     } catch (e) {
         console.log(e);
         throw e;
@@ -41,9 +41,15 @@ async function findByEmail(email) {
 
 async function getAllUsersWithoutPassword() {
     try {
-        console.log("HERE");
-        console.log(knex);
-        return knex(USERS_TABLE);
+        return knex(USERS_TABLE)
+            .select(
+                'id',
+                'email',
+                'name',
+                'type',
+                'created_at',
+                'updated_at'
+            );
     } catch (e) {
         throw e;
     }
@@ -58,12 +64,20 @@ async function deleteUserById(id) {
 
 }
 
+function findById(id) {
+    try {
+        return knex(USERS_TABLE).where('id', id).first();
+    } catch (e) {
+        throw e;
+    }
+}
+
 
 module.exports = {
     findByIdWithoutPassword,
     getAllUsersWithoutPassword,
     deleteUserById,
     findByEmail,
-    createUser
-
+    createUser,
+    findById
 };

@@ -3,14 +3,17 @@ const router = express.Router();
 const userRepo = require('../db/userRepo');
 const itemsRepo = require('../db/itemRepo');
 const items = require('../routes/items');
+const User = require('../models/user').User;
 
 /* GET users listing. */
 router.get('/', async function(req, res, next) {
     try {
-        console.log("here");
-        let usersP = userRepo.getAllUsersWithoutPassword();
-        console.log(usersP);
-        res.send({users: await usersP});
+        let userRows = await userRepo.getAllUsersWithoutPassword();
+        let users = [];
+        userRows.forEach(row => {
+            users.push(User.getFromRow(row));
+        });
+        res.send({users: users});
     } catch (e) {
         console.log(e);
         res.status(500).send();
@@ -25,7 +28,8 @@ router.get('/:userId', async function(req, res, next){
     try {
         let userQuery =  userRepo.findByIdWithoutPassword(userId);
         let itemsQuery =  itemsRepo.findByUserId(userId);
-        let user = await userQuery;
+        let userRow = await userQuery;
+        let user = User.getFromRow(userRow);
         let items = await itemsQuery;
         return res.send({user: user, items: items});
     } catch (e) {

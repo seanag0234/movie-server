@@ -1,4 +1,5 @@
 const itemRepo = require('../db/itemRepo');
+const Item = require('../models/item').Item;
 
 let getUsersItems = async function(req, res) {
     if (!req.params.userId) {
@@ -7,8 +8,11 @@ let getUsersItems = async function(req, res) {
     const userId = req.params.userId;
     try {
         let items = await itemRepo.findByUserId(userId);
-        console.log(userId);
-        return res.send(items);
+        let itemsArray = [];
+        items.forEach(row => {
+            itemsArray.push(Item.getFromRow(row))
+        });
+        return res.send(itemsArray);
     } catch (e) {
         console.log(e);
         return res.status(404).send(`User with id ${userId} not found`);
@@ -36,7 +40,8 @@ let addItemToUser = async function(req, res) {
     }
     const userId = req.params.userId;
     try {
-        let item = await itemRepo.create(title, type, medium, userId, status, category);
+        let itemId = await itemRepo.create(title, type, medium, userId, status, category);
+        let item = await itemRepo.findById(itemId);
         return res.status(201).send({item: item});
     } catch (e) {
         return res.status(404).send(`User with id ${userId} not found`);
@@ -50,12 +55,11 @@ let update = async function(req, res) {
         return res.status(400).send({message: 'userId and itemId params required'})
     }
     try {
-        let owned = await userOwnsItem(req.user._id, itemId);
+        let owned = await userOwnsItem(req.user.id, itemId);
         if (!owned) {
             return res.status(401).send();
         }
         let newItem = req.body.item;
-        console.log(newItem.medium);
         if (!itemRepo.isValidType(newItem.type) ) {
             return res.status(400).send({message: 'Not a valid type'});
         }
@@ -77,7 +81,7 @@ async function userOwnsItem(userId, itemId) {
     let items = await itemRepo.findByUserId(userId);
     let found = false;
     for (let i of items) {
-        if (i._id.toString() === itemId) {
+        if (i.id.toString() === itemId) {
             found = true;
             break;
         }
@@ -92,13 +96,14 @@ let deleteById = async function (req, res) {
         return res.status(400).send({message: 'userId and itemId params required'})
     }
     try {
-        let owned = await userOwnsItem(req.user._id, itemId);
+        let owned = await userOwnsItem(userId, itemId);
         if (!owned) {
             return res.status(401).send();
         }
         await itemRepo.deleteById(itemId);
         return res.status(204).send();
     } catch (e) {
+        console.log(e);
         res.status(500).send();
     }
 };

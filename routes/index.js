@@ -14,7 +14,7 @@ function signToken(user) {
     let signingOptions = {
         algorithm: 'HS512'
     };
-    return jwt.sign({ email: user.email, name: user.name, _id: user._id, type: user.type}, config.getSecret(), signingOptions);
+    return jwt.sign({ email: user.email, name: user.name, id: user.id, type: user.type}, config.getSecret(), signingOptions);
 }
 
 router.post('/login', async function (req, res) {
@@ -56,15 +56,15 @@ router.post('/register', async function (req, res, next) {
         res.status(400).send({message: 'Password needs to be at least 5 characters long.'})
     }
     try {
-        let user = await userRepo.createUser(name, email, password);
+        let userId = await userRepo.createUser(name, email, password);
+        let user = await userRepo.findById(userId);
         user.hashPassword = undefined;
         res.status(201).send({
             'user': user,
             'token': signToken(user)
         });
     } catch (e) {
-        console.log(e);
-        if (e.code === 11000) {
+        if (e.errno === 1062) {
             res.status(400).send({message: `User with email ${email} already exists.`});
         } else {
             res.status(500).send();
@@ -76,7 +76,7 @@ router.post('/verify-token', async function (req, res) {
     try {
         let token  = req.body.token;
         let user = await auth.verifyToken(token);
-        let items = await itemRepo.findByUserId(user._id);
+        let items = await itemRepo.findByUserId(user.id);
         let movies = items.filter((i) => {
             return i.type === 'movie';
         });
