@@ -79,6 +79,8 @@ router.post('/verify-token', async function (req, res) {
     try {
         let token  = req.body.token;
         let user = await auth.verifyToken(token);
+        let userRow = await userRepo.findById(user.id);
+        user = User.getFromRow(userRow);
         let itemsRows = await itemRepo.findByUserId(user.id);
         let items = [];
         itemsRows.forEach(item => {

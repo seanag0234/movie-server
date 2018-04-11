@@ -31,6 +31,19 @@ async function createUser(name, email, password) {
    }
 }
 
+async function update(id, name, email) {
+    try {
+        return knex(USERS_TABLE).where('id', id)
+            .update({
+                name: name,
+                email: email,
+                updated_at: knex.fn.now()
+            });
+    } catch (e) {
+        throw e;
+    }
+}
+
 async function findByEmail(email) {
     try {
         return knex(USERS_TABLE).where('email', email).first();
@@ -79,5 +92,6 @@ module.exports = {
     deleteUserById,
     findByEmail,
     createUser,
-    findById
+    findById,
+    update
 };

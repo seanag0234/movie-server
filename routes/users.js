@@ -49,6 +49,31 @@ router.delete('/:userId', async function (req, res, next) {
         res.status(500).send();
     }
 });
+
+router.put('/:userId', async function (req, res) {
+    try {
+        let body = req.body;
+        let name = body.name;
+        let email = body.email;
+        let id = body.id;
+
+        if (!name || !email || !id) {
+            return res.status(400).send('name, email, and id parameters required')
+        }
+
+        if (req.user.id !== id) {
+            res.status(401).send();
+        }
+
+        let updated = await userRepo.update(id, name, email);
+        updated ? res.status(200).send() : res.status(500).send();
+    }
+    catch (e) {
+        console.log(e);
+        res.status(500).send();
+    }
+});
+
 router.get('/:userId/items', async function(req, res, next){
     return items.getUsersItems(req, res);
 });
