@@ -47,6 +47,7 @@ router.post('/login', async function (req, res) {
         let query = userRepo.findByEmail(email);
         let userRow = await query;
         let user = userRow ? User.getFromRow(userRow) : undefined;
+        let userItemPromise =  addUserItems(user);
         if (!user) {
             return res.status(401).send(failureMessage)
         }
@@ -55,6 +56,7 @@ router.post('/login', async function (req, res) {
             return res.status(401).send(failureMessage)
         }
         let token = signToken(user);
+        await userItemPromise;
         user.hashPassword = undefined;
         return res.json({token: token, user: user});
 
@@ -78,7 +80,6 @@ router.post('/register', async function (req, res, next) {
         let userId = await userRepo.createUser(name, email, password);
         let user = await userRepo.findById(userId);
         user.hashPassword = undefined;
-        await addUserItems(user);
         res.status(201).send({
             'user': user,
             'token': signToken(user)
