@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 COPY . /usr/src/app
 WORKDIR /usr/src/app
 RUN npm install
-RUN npm install -g nodemon
+RUN npm install -g forever
 WORKDIR /usr/src/app
 EXPOSE 3000
-CMD ["nodemon"]
+CMD ["forever", "start", "./bin/www"]

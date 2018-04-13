@@ -9,9 +9,14 @@ const index = require('./routes/index');
 const users = require('./routes/users');
 const auth = require('./middleware/auth');
 const items = require('./routes/items');
-
+const helmet = require('helmet');
+// const options = {
+//     cert: fs.readFileSync('./sslcert/fullchain.pem'),
+//     key: fs.readFileSync('./sslcert/privkey.pem')
+// };
 const app = express();
 app.use(cors());
+app.use(helmet());
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -43,5 +48,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500).send();
   // res.render('error');
 });
-
+// app.listen(3000, () => console.log('Server listening on port 3000!'));
 module.exports = app;
