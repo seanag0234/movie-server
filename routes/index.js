@@ -19,6 +19,22 @@ function signToken(user) {
     return jwt.sign({ email: user.email, name: user.name, id: user.id, type: user.type}, config.getSecret(), signingOptions);
 }
 
+async function addUserItems(user) {
+    let itemRows = await itemRepo.findByUserId(user.id);
+    let books = [];
+    let movies = [];
+    itemRows.forEach(i => {
+        if (i.type === 'movie') {
+            movies.push(i);
+        } else if (i.type === 'book') {
+            books.push(i);
+        }
+    });
+
+    user.books = books;
+    user.movies = movies;
+}
+
 router.post('/login', async function (req, res) {
     let body = req.body;
     let password = body.password;
@@ -62,6 +78,7 @@ router.post('/register', async function (req, res, next) {
         let userId = await userRepo.createUser(name, email, password);
         let user = await userRepo.findById(userId);
         user.hashPassword = undefined;
+        await addUserItems(user);
         res.status(201).send({
             'user': user,
             'token': signToken(user)
