@@ -4,6 +4,7 @@ const userRepo = require('../db/userRepo');
 const itemsRepo = require('../db/itemRepo');
 const items = require('../routes/items');
 const User = require('../models/user').User;
+const emailValidator = require('email-validator');
 
 /* GET users listing. */
 router.get('/', async function(req, res, next) {
@@ -58,8 +59,12 @@ router.put('/:userId', async function (req, res) {
         let id = body.id;
 
         if (!name || !email || !id) {
-            return res.status(400).send('name, email, and id parameters required')
+            return res.status(400).send({message: 'name, email, and id parameters required'})
         }
+
+       if (!emailValidator.validate(email)) {
+            return res.status(400).send({message: 'Invalid email'})
+       }
 
         if (req.user.id !== id) {
             res.status(401).send();
