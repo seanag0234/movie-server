@@ -7,6 +7,7 @@ const itemRepo = require('../db/itemRepo');
 const auth = require('../middleware/auth');
 const User = require('../models/user').User;
 const Item = require('../models/item').Item;
+const emailValidator = require('email-validator');
 
 // router.get('/', function(req, res, next) {
 //   res.render('index', { title: 'Express' });
@@ -77,6 +78,9 @@ router.post('/register', async function (req, res, next) {
         res.status(400).send({message: 'Password needs to be at least 5 characters long.'})
     }
     try {
+        if (!emailValidator.validate(email)) {
+            return res.status(400).send({message: 'Invalid email.'});
+        }
         let userId = await userRepo.createUser(name, email, password);
         let user = await userRepo.findById(userId);
         user.hashPassword = undefined;
