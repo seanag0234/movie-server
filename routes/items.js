@@ -27,6 +27,7 @@ let addItemToUser = async function(req, res) {
     let title = body.title;
     let type = body.type;
     let category = body.category ? body.category : 'General';
+    let author = body.author ? body.author : '';
     let medium = body.medium;
     let status = body.status;
     if (!title || !type ||!medium || !status) {
@@ -40,7 +41,7 @@ let addItemToUser = async function(req, res) {
     }
     const userId = req.params.userId;
     try {
-        let itemId = await itemRepo.create(title, type, medium, userId, status, category);
+        let itemId = await itemRepo.create(title, type, medium, userId, status, category, author);
         let itemRow = await itemRepo.findById(itemId);
         let item = Item.getFromRow(itemRow);
         return res.status(201).send({item: item});
