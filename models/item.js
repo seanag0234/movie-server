@@ -1,6 +1,6 @@
 
 class Item {
-    constructor(id, title, type, category, medium, userId, status, updatedAt='', createdAt='') {
+    constructor(id, title, type, category, medium, userId, status, updatedAt='', createdAt='', author='') {
         this.id = id;
         this.title = title;
         this.type = type;
@@ -10,6 +10,7 @@ class Item {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.author = author;
     }
 
     static getFromRow(row) {
@@ -23,6 +24,7 @@ class Item {
         item.status = row.status;
         item.userId = row.user_id;
         item.type = row.type;
+        item.author = row.author;
         return item;
     }
 }
