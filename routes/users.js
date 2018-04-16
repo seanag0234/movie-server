@@ -42,6 +42,9 @@ router.delete('/:userId', async function (req, res, next) {
     if (!req.params.userId) {
         return res.status(400).send("userId param required")
     }
+    if (req.user.type !== 'admin') {
+        return res.status(403).send();
+    }
     const userId = req.params.userId;
     try {
        await userRepo.deleteUserById(userId);
