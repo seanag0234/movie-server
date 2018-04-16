@@ -23,6 +23,10 @@ let addItemToUser = async function(req, res) {
     if (!req.params.userId) {
         return res.status(400).send("userId param required")
     }
+    const userId = parseInt(req.params.userId);
+    if (req.user.id !== userId) {
+        return res.status(401).send();
+    }
     let body = req.body;
     let title = body.title;
     let type = body.type;
@@ -39,7 +43,6 @@ let addItemToUser = async function(req, res) {
     if (!itemRepo.isValidMedium(type, medium)) {
         return res.status(400).send({message: `${medium} is not a valid medium`});
     }
-    const userId = req.params.userId;
     try {
         let itemId = await itemRepo.create(title, type, medium, userId, status, category, author);
         let itemRow = await itemRepo.findById(itemId);
@@ -85,7 +88,7 @@ let update = async function(req, res) {
 async function userOwnsItem(userId, itemId) {
     let itemRow = await itemRepo.findById(itemId);
     let item = Item.getFromRow(itemRow);
-    return item.userId === userId
+    return item.userId === parseInt(userId);
 }
 
 let deleteById = async function (req, res) {
