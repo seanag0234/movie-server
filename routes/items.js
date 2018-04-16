@@ -84,14 +84,8 @@ let update = async function(req, res) {
 
 async function userOwnsItem(userId, itemId) {
     let items = await itemRepo.findByUserId(userId);
-    let found = false;
-    for (let i of items) {
-        if (i.id.toString() === itemId) {
-            found = true;
-            break;
-        }
-    }
-    return found;
+    let index = items.map(i => {return i.id.toString();}).indexOf(itemId);
+    return index > -1;
 }
 
 let deleteById = async function (req, res) {
