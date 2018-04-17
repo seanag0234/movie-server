@@ -24,7 +24,12 @@ async function addUserItems(user) {
     let itemRows = await itemRepo.findByUserId(user.id);
     let books = [];
     let movies = [];
+    let items = [];
     itemRows.forEach(i => {
+        let item = Item.getFromRow(i);
+        items.push(item);
+    });
+    items.forEach(i => {
         if (i.type === 'movie') {
             movies.push(i);
         } else if (i.type === 'book') {
@@ -48,7 +53,7 @@ router.post('/login', async function (req, res) {
         let query = userRepo.findByEmail(email);
         let userRow = await query;
         let user = userRow ? User.getFromRow(userRow) : undefined;
-        let userItemPromise =  addUserItems(user);
+        let userItemPromise = addUserItems(user);
         if (!user) {
             return res.status(401).send(failureMessage)
         }
